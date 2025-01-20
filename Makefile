@@ -30,9 +30,18 @@ BONUS = $(addprefix $(LIBFT_PATH)/, ft_lstnew.c ft_lstadd_front.c ft_lstsize.c \
 EXTRA = $(addprefix $(LIBFT_PATH)/, ft_unumlen.c ft_printnbr.c ft_uitoa.c \
 		ft_ptrlen.c ft_putptr.c)  
 
+PRINTF_PATH = ./ft_printf
+PRINTF_SRC = $(addprefix $(PRINTF_PATH)/, ft_printf.c ft_printf_hex.c \
+			 ft_printf_ptr.c ft_printf_unsigned.c)
+
+GNL_PATH = ./get_next_line
+GNL_SRC = $(addprefix $(GNL_PATH)/, get_next_line.c get_next_line_utils.c)
+
 OBJS		= $(addprefix $(BUILD_PATH)/, $(notdir $(SRC:.c=.o)))
 BONUS_OBJS	= $(addprefix $(BUILD_PATH)/, $(notdir $(BONUS:.c=.o)))
 EXTRA_OBJS  = $(addprefix $(BUILD_PATH)/, $(notdir $(EXTRA:.c=.o)))
+PRINTF_OBJS = $(addprefix $(BUILD_PATH)/, $(notdir $(PRINTF_SRC:.c=.o)))
+GNL_OBJS	= $(addprefix $(BUILD_PATH)/, $(notdir $(GNL_SRC:.c=.o)))
 
 ### Message Vars
 _NAME	 		= [$(MAG)libft$(D)]
@@ -77,6 +86,14 @@ $(BUILD_PATH)/%.o: $(LIBFT_PATH)/%.c
 	@echo -n "$(GRN)█$(D)"
 	$(CC) $(CFLAGS) -c $< -o $@
 
+$(BUILD_PATH)/%.o: $(PRINTF_PATH)/%.c
+	@echo -n "$(GRN)█$(D)"
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(BUILD_PATH)/%.o: $(GNL_PATH)/%.c
+	@echo -n "$(GRN)█$(D)"
+	$(CC) $(CFLAGS) -c $< -o $@
+
 $(NAME): $(BUILD_PATH) $(OBJS)
 	@echo "* $(YEL)Archiving $(_NAME) archive$(D)"
 	$(AR) $(NAME) $(OBJS)
@@ -87,10 +104,46 @@ bonus: $(BUILD_PATH) $(OBJS) $(BONUS_OBJS)
 	$(AR) $(NAME) $(OBJS) $(BONUS_OBJS)
 	@echo "* $(_NAME) archived w/ bonus: $(_SUCCESS) $(YEL)🖔$(D)"
 
-extra: $(BUILD_PATH) $(OBJS) $(BONUS_OBJS) $(EXTRA_OBJS) ## Compile libft with extra
+extra: $(BUILD_PATH) $(OBJS) $(BONUS_OBJS) $(EXTRA_OBJS) $(PRINTF_OBJS) $(GNL_OBJS)## Compile libft with extra
 	@echo "* $(YEL)Archiving $(_NAME) w/ extras$(D)"
-	$(AR) $(NAME) $(OBJS) $(BONUS_OBJS) $(EXTRA_OBJS)
+	$(AR) $(NAME) $(OBJS) $(BONUS_OBJS) $(EXTRA_OBJS) $(PRINTF_OBJS) $(GNL_OBJS)
 	@echo "* $(_NAME) archived w/ extras: $(_SUCCESS) $(YEL)🖔$(D)"
+
+##@ Test, Debug & Leak Check RUles
+
+norm:
+		@make --no-print-directory norm_path IN_PATH=$(LIBFT_PATH)
+		@make --no-print-directory norm_path IN_PATH=$(PRINTF_PATH)
+		@make --no-print-directory norm_path IN_PATH=$(GNL_PATH)
+
+norm_path: $(TEMP_PATH)		## Run norminette test on source files
+		@echo "$(CYA)$(_SEP)$(D)"
+		@printf "${_NORM}: $(YEL)$(IN_PATH)$(D)\n"
+		@ls $(IN_PATH) | wc -l > $(TEMP_PATH)/norm_ls.txt
+		@printf "$(_NORM_INFO) $$(cat $(TEMP_PATH)/norm_ls.txt)\n"
+		@printf "$(_NORM_SUCCESS) "
+		@norminette $(IN_PATH) | grep -wc "OK" > $(TEMP_PATH)/norm.txt; \
+		if [ $$? -eq 1 ]; then \
+			echo "0" > $(TEMP_PATH)/norm.txt; \
+		fi
+		@printf "$$(cat $(TEMP_PATH)/norm.txt)\n"
+		@if ! diff -q $(TEMP_PATH)/norm_ls.txt $(TEMP_PATH)/norm.txt > /dev/null; then \
+			printf "$(_NORM_ERR) "; \
+			norminette $(IN_PATH) | grep -v "OK" > $(TEMP_PATH)/norm_err.txt; \
+			cat $(TEMP_PATH)/norm_err.txt | grep -wc "Error:" > $(TEMP_PATH)/norm_errn.txt; \
+			printf "$$(cat $(TEMP_PATH)/norm_errn.txt)\n"; \
+			printf "$$(cat $(TEMP_PATH)/norm_err.txt)\n"; \
+		else \
+			printf "[$(YEL)Everything is OK$(D)]\n"; \
+		fi
+		@echo "$(CYA)$(_SEP)$(D)"
+
+check_ext_func: all		## Check for external functions
+		@echo "[$(YEL)Checking for external functions$(D)]"
+		@echo "$(YEL)$(_SEP)$(D)"
+		@echo "$(CYA)Reading binary$(D): $(MAG)$(NAME)$(D)"
+		nm ./$(NAME) | grep "U" | grep -v "__" | tee $(TEMP_PATH)/ext_func.txt
+		@echo "$(YEL)$(_SEP)$(D)"
 
 ##@ Clean-up Rules 󰃢
 
