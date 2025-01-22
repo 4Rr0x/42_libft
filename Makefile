@@ -6,7 +6,7 @@
 #    By: jopedro- <jopedro-@student.42porto.com>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/07 13:20:56 by jopedro-          #+#    #+#              #
-#    Updated: 2024/11/07 13:21:02 by jopedro-         ###   ########.fr        #
+#    Updated: 2025/01/22 12:47:53 by jopedro-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,7 +28,7 @@ BONUS = $(addprefix $(LIBFT_PATH)/, ft_lstnew.c ft_lstadd_front.c ft_lstsize.c \
 		ft_lstiter.c ft_lstmap.c)
 
 EXTRA = $(addprefix $(LIBFT_PATH)/, ft_unumlen.c ft_printnbr.c ft_uitoa.c \
-		ft_ptrlen.c ft_putptr.c)  
+		ft_ptrlen.c ft_putptr.c ft_strcmp.c)  
 
 PRINTF_PATH = ./ft_printf
 PRINTF_SRC = $(addprefix $(PRINTF_PATH)/, ft_printf.c ft_printf_hex.c \
