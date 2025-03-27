@@ -76,6 +76,11 @@ char	*get_next_line(int fd)
 	if (!text[fd])
 		return (NULL);
 	line = ft_find_line(text[fd]);
-	text[fd] = ft_leftovers(text[fd]);
+	if (!line)
+	{
+		free(line);
+		return ("");
+	}
+		text[fd] = ft_leftovers(text[fd]);
 	return (line);
 }
