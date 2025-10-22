@@ -6,14 +6,14 @@
 /*   By: jopedro- <jopedro-@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 15:16:52 by jopedro-          #+#    #+#             */
-/*   Updated: 2025/01/22 12:31:31 by jopedro-         ###   ########.fr       */
+/*   Updated: 2025/02/21 12:59:01 by jopedro-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_PRINTF_H
 # define FT_PRINTF_H
 
-# include "../../libft/libft/libft.h"
+# include "../libft/libft.h"
 # include <stdarg.h>
 # include <unistd.h>
 # include <stdint.h>
